@@ -41,12 +41,13 @@ The load test was performed to evaluate the API performance under normal expecte
 ### Load Test Script
 
 ```javascript
-(PASTE LOAD TEST CODE HERE)
+load-test.js
 ```
 
 ### Load Test Result
 
-(PASTE SCREENSHOT HERE LATER)
+<img width="755" height="563" alt="image" src="https://github.com/user-attachments/assets/8794657d-0d1f-4e94-9a58-94b62faed371" />
+
 
 ### Analysis
 
@@ -66,7 +67,8 @@ The stress test was conducted to determine the breaking point of the API under h
 
 ### Stress Test Result
 
-(PASTE SCREENSHOT HERE LATER)
+<img width="965" height="386" alt="image" src="https://github.com/user-attachments/assets/1ebc67cc-5970-4621-90be-5ebcbe2ad9c0" />
+
 
 ### Analysis
 
