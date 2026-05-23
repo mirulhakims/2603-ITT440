@@ -1,209 +1,177 @@
-# Comprehensive Performance Testing and Bottleneck Analysis of the JSONPlaceholder REST API Using Grafana k6
+<div align="center">
 
-| Item | Detail |
-|------|--------|
-| **Assignment** | ITT440 Individual Assignment (Individual Submission) |
-| **Student** | Mariatulkaftiah binti Othman |
-| **Target API** | `https://jsonplaceholder.typicode.com/posts` |
-| **Primary Tool** | Grafana k6 (JavaScript scripts) |
-| **Tests Performed** | Load Test, Stress Test, Spike Test |
-| **Operating System** | Windows 11 |
+![Grafana k6](k6-logo.png)
 
----
+# Performance Testing and Bottleneck Analysis of the JSONPlaceholder API Using Grafana k6
 
-## Results at a Glance
+### 🎯 ITT440 Individual Assignment
 
-Here is a quick summary of what I found. The full details are further down in the [Results & Analysis](#results--analysis) section.
+</div>
 
-| Test | What it checks | p95 Response Time | Throughput | Errors | Result |
-|------|----------------|:-----------------:|:----------:|:------:|:------:|
-| **Load** | Normal traffic (20 users) | 264 ms | 13 req/s | 0% | ✅ Pass |
-| **Stress** | Heavy traffic (300 users) | 171 ms | 120 req/s | 0% | ✅ Pass |
-| **Spike** | Sudden burst (10 → 300) | 483 ms | 120 req/s | 0% | ✅ Pass |
+| 🛠️ Tool | 💻 Language | 🧪 Tests | ✅ Status |
+|:-------:|:-----------:|:--------:|:---------:|
+| **Grafana k6** | **JavaScript** | Load · Stress · Spike | **All Passed** |
 
-**Main finding:** The API was very strong, it handled 300 users with zero failures. The only weakness was a few very slow requests (tail latency), where the slowest reached about 5 seconds even though most were under half a second.
+<div align="center">
 
----
+| 📋 Detail | ℹ️ Information |
+|:----------|:--------------|
+| 👤 **Student** | Mariatulkaftiah binti Othman |
+| 🎯 **Target API** | `jsonplaceholder.typicode.com/posts` |
+| 🛠️ **Primary Tool** | Grafana k6 (JavaScript) |
+| 🧪 **Tests** | Load · Stress · Spike |
+| 💻 **OS** | Windows 11 |
 
-## Table of Contents
-1. [How It Works](#how-it-works)
-2. [Problem Statement](#problem-statement)
-3. [System Requirements](#system-requirements)
-4. [Installation](#installation)
-5. [How to Run](#how-to-run)
-6. [Project Structure](#project-structure)
-7. [Test Types](#test-types)
-8. [Metrics Explained](#metrics-explained)
-9. [Sample Output](#sample-output)
-10. [k6 Test Scripts](#k6-test-scripts)
-11. [Results & Analysis](#results--analysis)
-12. [Bottlenecks & Recommendations](#bottlenecks--recommendations)
-13. [Conclusion](#conclusion)
-14. [Demo Video](#demo-video)
+</div>
 
 ---
 
-## How It Works
+## 📊 Results at a Glance
+
+<div align="center">
+
+| Test | What it checks | p95 | Throughput | Errors | Result |
+|:----:|:--------------:|:---:|:----------:|:------:|:------:|
+| 🟢 **Load** | Normal (20 users) | `264 ms` | `13 req/s` | `0%` | ✅ Pass |
+| 🟠 **Stress** | Heavy (300 users) | `171 ms` | `120 req/s` | `0%` | ✅ Pass |
+| 🔴 **Spike** | Sudden burst | `483 ms` | `120 req/s` | `0%` | ✅ Pass |
+
+</div>
+
+> 💡 **Main finding:** The API was very strong. It handled 300 users with zero failures. The only weakness was **tail latency**, a few requests reached 5 seconds while most stayed under half a second.
+
+---
+
+## 📑 Table of Contents
+1. ⚙️ [How It Works](#️-how-it-works)
+2. ❓ [Problem Statement](#-problem-statement)
+3. 💻 [Setup & Installation](#-setup--installation)
+4. 🧪 [Test Types](#-test-types)
+5. 📐 [Metrics Explained](#-metrics-explained)
+6. 📜 [Test Scripts](#-test-scripts)
+7. 📈 [Results & Analysis](#-results--analysis)
+8. 🔍 [Bottlenecks & Recommendations](#-bottlenecks--recommendations)
+9. ✅ [Conclusion](#-conclusion)
+10. 🎥 [Demo Video](#-demo-video)
+11. 📚 [References](#-references)
+
+---
+
+## ⚙️ How It Works
 
 ```
-Maelicious88's PC  ──────────────────────────►  jsonplaceholder.typicode.com
-                    sends HTTP GET/POST requests       (public API server)
-                    using Grafana k6                          │
-Maelicious88's PC  ◄──────────────────────────  returns JSON response
-                    measures response time,
-                    throughput and error rate
+Maelicious88's PC  ----- sends requests ----->  JSONPlaceholder API
+   (runs k6)                                    (the server)
+Maelicious88's PC  <---- gets responses ------  returns JSON data
 ```
 
-- **Maelicious88's PC** is the **client**, it runs k6 and sends the requests
-- `jsonplaceholder.typicode.com` is the **server**, it responds with JSON data
-- The **internet** is the bridge between them
-- That's why latency varies every run, it depends on real network conditions at that moment
+My PC runs k6 and acts like many users. JSONPlaceholder is the server that answers. In short:
+- **My PC** sends HTTP requests using k6
+- **The API** returns JSON responses
+- **k6** measures response time, throughput, and errors
+- Speed varies a little each run because requests travel over the internet
 
 ---
 
-## Problem Statement
+## ❓ Problem Statement
 
-Modern APIs must handle varying traffic patterns, from steady sustained load to sudden spikes. Identifying **where and when** performance degrades is critical for building reliable systems.
+APIs must handle different traffic patterns, from steady use to sudden spikes. This project tests the JSONPlaceholder `/posts` endpoint under three patterns to find where it slows down:
 
-This project investigates the performance characteristics of a public REST API (`jsonplaceholder.typicode.com/posts`) under three traffic profiles:
+| Test | Purpose |
+|------|---------|
+| **Load** | Check normal traffic (20 users) |
+| **Stress** | Find the breaking point (up to 300 users) |
+| **Spike** | Test a sudden burst (10 to 300 users) |
 
-| Test Type | Description |
-|-----------|-------------|
-| **Load Test** | Simulate normal, sustained traffic (20 virtual users) |
-| **Stress Test** | Exceed normal capacity to find breaking points (up to 300 virtual users) |
-| **Spike Test** | Simulate a sudden traffic burst (jump from 10 to 300 virtual users) |
+### Why I Chose Grafana k6
+- Tests are written in JavaScript, easy to read and save on GitHub
+- Can simulate hundreds of users on a normal laptop
+- Gives clear results: response time, percentiles, throughput, error rate
+- Free, open source, and used by real companies
 
-Instead of comparing programming techniques, this project focuses on the API itself, how the same `/posts` endpoint behaves when the traffic pattern changes, and where its real weak points are.
-
----
-
-## System Requirements
-
-Below are the minimum things you need to run this project on your own computer. You do not need a powerful machine, any normal laptop works.
-
-| Component | Minimum | Why it is needed |
-|-----------|---------|------------------|
-| Grafana k6 | v2.0.0 or newer | This is the testing tool that sends the traffic and measures the results. |
-| RAM | 512 MB | k6 is very light, so even an old laptop can run it. More RAM helps when simulating many users. |
-| Operating System | Windows 10 / macOS 12 / Ubuntu 20.04 (or newer) | k6 works on all three. I used Windows 11. |
-| Internet connection | Required | The tests send real requests to the live API online, so you must be connected to the internet. |
-
-In short: install k6, make sure you have an internet connection, and you are ready to run the tests on almost any computer.
+**My hypothesis before testing:**
+- Normal load would be fast with no errors
+- Heavy stress would slow the API and cause errors past a certain point
+- A sudden spike would cause a temporary slowdown, then recover
 
 ---
 
-## Installation
+## 💻 Setup & Installation
 
-### Step 1 – Install k6 (Windows)
+**Requirements:** Grafana k6 v2.0.0, any OS (Windows/macOS/Linux), 512 MB RAM, and an internet connection.
 
+**Install on Windows:**
 ```bash
 winget install k6 --source winget
 ```
 
-### Step 2 – Check it works
-
+**Check it works:**
 ```bash
 k6 version
 ```
 
-This printed `k6.exe v2.0.0` on my machine, confirming it was ready.
-
----
-
-## How to Run
-
-Run each test from PowerShell in the folder with the scripts:
-
+**Run the tests:**
 ```bash
-# Load Test
 k6 run load-test.js
-
-# Stress Test
 k6 run stress-test.js
-
-# Spike Test
 k6 run spike-test.js
 ```
 
-Each run prints a live progress bar and a full summary table of results at the end.
-
----
-
-## Project Structure
-
+**Files in this folder:**
 ```
-MARIATULKAFTIAH BINTI OTHMAN/
-│
-├── README.md                       # This article
-├── load-test.js                    # Load test script (20 VUs)
-├── stress-test.js                  # Stress test script (up to 300 VUs)
-├── spike-test.js                   # Spike test script (sudden burst)
-├── response-time-comparison.png    # Chart: response times
-├── throughput.png                  # Chart: throughput
-└── error-rate.png                  # Chart: error rate
+README.md            (this article)
+load-test.js         (load test script)
+stress-test.js       (stress test script)
+spike-test.js        (spike test script)
+response-time-comparison.png
+throughput.png
+error-rate.png
 ```
 
 ---
 
-## Test Types
+## 🧪 Test Types
 
-### Load Test (20 virtual users)
-Ramps up to 20 virtual users, holds for one minute, then ramps down. This simulates normal, everyday traffic. Each user reads the posts list (`GET`) and sometimes creates a post (`POST`), with a 1-second pause to act like a real person.
+### 🟢 Load Test (20 users)
+Ramps to 20 users, holds 1 minute, ramps down. Copies normal daily traffic. Threshold: 95% of requests under 500 ms.
 
-### Stress Test (up to 300 virtual users)
-Climbs in steps, 50, 100, 200, then 300 virtual users, holding each step for one minute, then drops back to zero. This pushes the API beyond normal levels to find the breaking point and check if it recovers.
+### 🟠 Stress Test (up to 300 users)
+Climbs in steps (50, 100, 200, 300) to find the breaking point. Threshold: 95% under 2000 ms.
 
-### Spike Test (sudden burst to 300)
-Holds a calm baseline of 10 users, jumps to 300 in just 10 seconds, holds the spike for a minute, then drops back down. This tests whether the API survives a sudden rush and how fast it recovers.
+### 🔴 Spike Test (sudden burst)
+Jumps from 10 to 300 users in 10 seconds, like a viral post. Threshold: 95% under 3000 ms.
 
 ---
 
-## Metrics Explained
+## 📐 Metrics Explained
 
 | Metric | Meaning |
 |--------|---------|
-| `http_req_duration` | How long a request takes (read as p95, the 95th percentile) |
-| `http_req_failed` | Percentage of requests that failed at the HTTP level |
-| `http_reqs` | Total requests, and requests per second (throughput) |
-| `vus` | Number of active virtual users (the load level) |
-| p95 | 95% of requests were faster than this value |
+| **Average** | Mean time of all requests. Can hide slow ones. |
+| **p95** | 95% of requests were faster than this. The most useful number. |
+| **Max** | The single slowest request (worst case). |
+| **Throughput** | Requests answered per second. Higher is better. |
+| **Error rate** | Percentage of failed requests. |
+| **VUs** | Virtual users (fake users k6 pretends to be). |
 
-I report **p95** instead of just the average, because the average can hide a few very slow requests. The p95 and the maximum show where real users feel the pain.
-
----
-
-## Sample Output
-
-> Tests run on Windows 11 using k6 v2.0.0 against the live `/posts` endpoint.
-
-### Performance Comparison Summary (Actual Results)
-
-| Test Type | Avg Latency | p95 Latency | Max Latency | Throughput | Error Rate |
-|-----------|:-----------:|:-----------:|:-----------:|:----------:|:----------:|
-| load      |   143.06 ms |   264.63 ms |   727.33 ms |  13.22 /s  |    0.00%   |
-| stress    |    79.90 ms |   171.14 ms |    5.03 s   | 120.35 /s  |    0.00%   |
-| spike     |   206.20 ms |   483.10 ms |    3.15 s   | 119.91 /s  |    0.00%   |
-
-### Key Finding
-- **Load test** stayed fast and clean, p95 of only 264 ms with 0% errors
-- **Stress test** handled 300 users with the best p95 (171 ms) but had the worst maximum latency (5.03 s)
-- **Spike test** survived the sudden burst cleanly with 100% successful checks, p95 of 483 ms
+### ⭐ Why p95 matters
+- If 100 people use the API and p95 is 264 ms, then 95 of them got an answer faster than 264 ms
+- Only the 5 slowest people waited longer
+- I use p95 instead of the average, because the average can hide a few very slow requests
+- Those hidden slow requests give some users a bad experience, so p95 shows the real picture
 
 ---
 
-## k6 Test Scripts
+## 📜 Test Scripts
 
-The three test scripts are written in JavaScript. To use them, you create a plain text file for each one (for example `load-test.js`) and paste in the code below. You can make these files in any text editor like Notepad or VS Code, save them with the `.js` ending, and put them in one folder. Then you run them with the `k6 run` command shown earlier.
+The scripts are JavaScript files. You make each one in a text editor, save it with the `.js` ending, and run it with `k6 run`. They are also in this repository to download.
 
-All three scripts are also included in this repository, so you can download them directly instead of typing them out.
-
-### Load Test (`load-test.js`)
-
+### Load Test
 ```javascript
 export const options = {
   stages: [
-    { duration: '30s', target: 20 },  // ramp up to 20 users
-    { duration: '1m',  target: 20 },  // hold at 20 users
+    { duration: '30s', target: 20 },  // ramp up
+    { duration: '1m',  target: 20 },  // hold
     { duration: '30s', target: 0  },  // ramp down
   ],
   thresholds: {
@@ -212,123 +180,145 @@ export const options = {
   },
 };
 ```
-- Simulates normal traffic with 20 users
-- Each user reads posts and sometimes creates one
 
-### Stress Test (`stress-test.js`)
-
+### Stress Test
 ```javascript
 export const options = {
   stages: [
     { duration: '1m', target: 50  },
     { duration: '1m', target: 100 },
     { duration: '1m', target: 200 },
-    { duration: '1m', target: 300 },  // push to the breaking point
+    { duration: '1m', target: 300 },  // breaking point
     { duration: '1m', target: 0   },
   ],
 };
 ```
-- Climbs in steps to 300 users to find the limit
 
-### Spike Test (`spike-test.js`)
-
+### Spike Test
 ```javascript
 export const options = {
   stages: [
     { duration: '30s', target: 10  },  // baseline
     { duration: '10s', target: 300 },  // sudden spike
-    { duration: '1m',  target: 300 },  // hold the spike
-    { duration: '10s', target: 10  },  // drop back
-    { duration: '30s', target: 10  },  // recovery
+    { duration: '1m',  target: 300 },  // hold
+    { duration: '10s', target: 10  },  // drop
+    { duration: '30s', target: 10  },  // recover
   ],
 };
 ```
-- Jumps suddenly from 10 to 300 users to test a traffic burst
 
 ---
 
-## Results & Analysis
+## 📈 Results & Analysis
 
 > Tests run on Windows 11 using k6 v2.0.0.
 
-### Summary Table
+<div align="center">
 
-| Test | Avg (ms) | p95 (ms) | Max | Throughput (req/s) | Errors | Total Requests |
-|------|:--------:|:--------:|:---:|:------------------:|:------:|:--------------:|
-| Load   | 143.06 | 264.63 | 727 ms | 13.22  | 0% | 1,610  |
-| Stress | 79.90  | 171.14 | 5.03 s | 120.35 | 0% | 36,159 |
-| Spike  | 206.20 | 483.10 | 3.15 s | 119.91 | 0% | 18,003 |
+| Test | Avg (ms) | p95 (ms) | Max | Throughput | Errors | Requests |
+|:----:|:--------:|:--------:|:---:|:----------:|:------:|:--------:|
+| 🟢 Load   | `143` | `264` | `727 ms` | `13.22`  | `0%` | `1,610`  |
+| 🟠 Stress | `80`  | `171` | `5.03 s` | `120.35` | `0%` | `36,159` |
+| 🔴 Spike  | `206` | `483` | `3.15 s` | `119.91` | `0%` | `18,003` |
 
-### Chart 1, Response Time
+</div>
+
+### 📋 What Each Test Showed
+
+**🟢 Load Test:**
+- p95 of 264 ms (95% of requests faster than this)
+- 0% errors
+- Under normal traffic, the API is fast and reliable
+
+**🟠 Stress Test:**
+- p95 of only 171 ms, even faster than the load test
+- The API scales very well, no slowdown with more users
+- But the max hit 5 seconds, so a few requests were very slow
+- This is the key finding of the project
+
+**🔴 Spike Test:**
+- p95 rose to 483 ms during the sudden burst
+- Higher than stress, because a burst gives no time to prepare
+- 100% of checks passed with 0 errors
+- The API survived the surge
+
+### 📊 Chart 1: Response Time
 ![Response time comparison](response-time-comparison.png)
 
-The average and p95 response times stayed low across all three tests. The load test had a p95 of 264 ms, the stress test was actually the fastest at 171 ms even with 300 users, and the spike test was 483 ms during its sudden burst. But the maximum response time tells a different story, it jumped to 5 seconds in the stress test and 3 seconds in the spike test. So most requests were fast, but a few were very slow. This is called **tail latency** and it is the main bottleneck.
+- Average and p95 stayed low in all tests
+- But the max bar is much taller (up to 5 s in the stress test)
+- Most requests were fast, but a few were very slow
+- These slow requests are called **tail latency**, the main weakness
 
-### Chart 2, Throughput
+### 📊 Chart 2: Throughput
 ![Throughput](throughput.png)
 
-The throughput scaled very well, from about 13 requests/second in the load test up to around 120 in the stress and spike tests. That is roughly 9 times more traffic, and the API never crashed or rejected a request. This shows the API has strong capacity.
+- Throughput scaled from 13 up to 120 requests per second
+- That is about 9 times more traffic, with no crashing
+- The API has strong capacity
+- It did not reach its limit even at 300 users
 
-### Chart 3, Error Rate
+### 📊 Chart 3: Error Rate
 ![Error rate](error-rate.png)
 
-The error rate was almost perfect in all three tests. The load and spike tests had 0% failed checks, and the stress test had only 0.01% (just 4 out of 36,159 requests were a little slow). Importantly, `http_req_failed` was 0% everywhere, the server never actually rejected a single request. The few "failed" checks were only requests that were slightly slower than my target time, not real errors.
+- The error rate was almost zero everywhere
+- The real HTTP error rate was 0% in all tests
+- The server never rejected a single request
+- Every one of the 55,000+ requests was answered successfully
 
-### Did My Hypothesis Hold?
-
-My hypothesis was mostly correct, with one interesting point:
-- I expected the normal load test to be fast and clean with no errors, this was true (p95 264 ms, 0% errors).
-- I expected errors to appear under heavy load, but the API handled 300 users with zero HTTP failures, so it is stronger than I thought.
-- My spike prediction was accurate, the burst was survived cleanly and only caused a few slower requests during the surge.
+### 🤔 Did My Hypothesis Hold?
+- Normal load is fast and clean: **correct** (p95 264 ms, 0% errors)
+- Errors appear under heavy load: **wrong**, in a good way (the API handled 300 users with zero failures, so it is stronger than I thought)
+- Spike causes a temporary slowdown but survives: **correct**
 
 ---
 
-## Bottlenecks & Recommendations
+## 🔍 Bottlenecks & Recommendations
 
-**Bottlenecks I found:**
-1. **Tail latency**, a few requests took up to 5 seconds even though most were under half a second. This is the main weakness.
-2. **No real breaking point**, even at 300 users the API never failed, so its true limit is higher than I tested.
-3. **Slight slowness under sudden spikes**, the spike test had a higher p95 (483 ms) than the steady stress test (171 ms), showing that sudden bursts cost a little more than gradual load.
+**Bottlenecks:**
+1. **Tail latency** is the main weakness, a few requests reached 5 seconds while most were fast.
+2. **No breaking point reached**, the API never failed even at 300 users, so its true limit is higher.
+3. **Spikes cost more than gradual load**, the spike p95 (483 ms) was higher than the stress p95 (171 ms).
 
 **Recommendations:**
-- Use **caching or a CDN** to serve common responses faster and reduce tail latency.
-- **Warm up the connection** before measuring, so the first test is not unfairly slow.
-- Add **rate limiting** so sudden spikes return controlled responses in a real API.
-- Run these k6 tests in a **CI/CD pipeline** to catch performance problems early.
+1. Use **caching or a CDN** to reduce tail latency.
+2. **Warm up connections** before peak traffic.
+3. Add **rate limiting** to handle sudden spikes.
+4. Run these tests in a **CI/CD pipeline** to catch problems early.
+5. Test **beyond 300 users** next time to find the real limit.
 
 ---
 
-## Conclusion
+## ✅ Conclusion
 
-The JSONPlaceholder API was stronger than I expected. It handled 300 users at once with zero failures across more than 55,000 requests in total, and most requests were very fast (often under half a second). The main weakness was tail latency, a small number of requests took up to 5 seconds during heavy load, even though the average and p95 stayed low.
-
-My hypothesis was mostly correct: the normal load was fast and clean, and the spike was survived well. The one surprise was how robust the API was under stress, it never failed even at 300 users, so its real breaking point is higher than I tested.
-
-Overall this project helped me learn how to use a real performance testing tool, how to read metrics like p95 and throughput, and why it is important to look at the maximum and percentiles instead of just the average. The average looked healthy in every test, but the maximum revealed the real weak point. These are useful skills for real software work in the future.
+- The API was stronger than expected, handling 300 users with zero failures across 55,000+ requests
+- The only weakness was tail latency, a few slow requests hidden behind a healthy average
+- Biggest lesson: you cannot judge performance by the average alone
+- The average looked fine in every test, but the p95 and max revealed the real weak point
+- This is why percentiles matter in performance testing
+- This project taught me how to use a real testing tool and analyse results properly
 
 ---
 
-## Demo Video
+## 🎥 Demo Video
 
 ▶️ [Watch on YouTube](PASTE_YOUR_YOUTUBE_LINK_HERE)
 
-The video shows me installing k6, running the three tests, and walking through my most important results.
+The video shows me installing k6, running the three tests, and explaining the results.
 
 ---
 
-## References & Sources
+## 📚 References
 
-Here are the official, trusted sources I used for this project so readers can verify the information and learn more:
+| Source | Link |
+|--------|------|
+| Grafana k6 (official site) | https://k6.io |
+| k6 Documentation | https://grafana.com/docs/k6/latest/ |
+| k6 on GitHub | https://github.com/grafana/k6 |
+| JSONPlaceholder API | https://jsonplaceholder.typicode.com |
 
-| Source | What it is | Link |
-|--------|-----------|------|
-| Grafana k6 | The official website and documentation for the testing tool I used | https://k6.io |
-| k6 Documentation | Official guides on writing tests, options, and metrics | https://grafana.com/docs/k6/latest/ |
-| k6 on GitHub | The open-source code for k6 (by Grafana Labs) | https://github.com/grafana/k6 |
-| JSONPlaceholder | The free public REST API I tested against | https://jsonplaceholder.typicode.com |
-
-**Tool installed via:** Windows Package Manager (winget), using the official `GrafanaLabs.k6` package, which downloads directly from the official k6 GitHub releases. This guarantees the tool is the genuine Grafana k6 and not a copy.
+Tool installed via the official `GrafanaLabs.k6` winget package.
 
 ---
 
-*Submitted for **ITT440**, Universiti Teknologi MARA (UiTM), 2026*
+*ITT440, Universiti Teknologi MARA (UiTM), 2026*
