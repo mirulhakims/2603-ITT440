@@ -72,9 +72,6 @@ Modern APIs must handle varying user loads efficiently. This project evaluates h
 - Tool: Apache JMeter  
 - Protocol: HTTPS  
 - Method: GET  
-- Loop Count: 10  
-- Ramp-Up Period: 10 seconds  
-- Timer: None  
 
 ### 📸 HTTP Request Configuration
 ![HTTP-Req](images/HTTP-Req.png)
