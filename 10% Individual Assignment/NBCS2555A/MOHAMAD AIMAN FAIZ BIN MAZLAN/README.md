@@ -202,6 +202,7 @@ Both InfluxDB and Grafana services are running successfully.
 ---
 
 ## ⚡ k6 Execution Output
+![k6 Result](screenshots/k6-running.png)
 ![k6 Result](screenshots/k6-finished.png)
 
 Confirms successful execution of all three test scenarios.
@@ -221,7 +222,7 @@ Displays real-time system metrics:
 
 ## 🔁 Retest Evidence
 ![Retest](screenshots/k6-retest.png)
-
+![Retest](screenshots/grafana-retest.png)
 Shows consistency of results across multiple executions.
 
 ---
