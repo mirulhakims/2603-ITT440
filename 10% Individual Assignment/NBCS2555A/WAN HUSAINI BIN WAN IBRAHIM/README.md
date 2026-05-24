@@ -69,15 +69,15 @@ vegeta plot load.bin > load.html
 ### Step 3: Run Stress Test
 
 ```bash id="x1ld91"
-vegeta attack -rate=100 -duration=30s -targets=targets.txt > load.bin
-vegeta plot load.bin > load.html
+vegeta attack -rate=100 -duration=30s -targets=targets.txt > stress.bin
+vegeta plot stress.bin > stress.html
 ```
 
 ### Step 4: Run Spike Test
 
 ```bash id="x1ld91"
-vegeta attack -rate=200 -duration=10s -targets=targets.txt > load.bin
-vegeta plot load.bin > load.html
+vegeta attack -rate=200 -duration=10s -targets=targets.txt > spike.bin
+vegeta plot spike.bin > spike.html
 ```
 
 ---
