@@ -1,87 +1,247 @@
 # MOHAMAD AIMAN FAIZ BIN MAZLAN
 
+---
+
 # ITT440 – Performance Evaluation and Scalability Analysis of HTTP Request Handling Under Concurrent Load Using k6 on a Public API Service
 
+# Performance Evaluation and Scalability Analysis of HTTP Request Handling Under Concurrent Load Using k6 on a Public API Service
+
 ## Student Information
-**Name:** MOHAMAD AIMAN FAIZ BIN MAZLAN  
-**Student No:** 2024369211  
-**Course:** ITT440  
+
+| Item | Details |
+|------|---------|
+| **Name** | MOHAMAD AIMAN FAIZ BIN MAZLAN |
+| **Student No.** | 2024369211 |
+| **Course** | ITT440 – Parallel Programming |
+| **Assignment** | Individual Assignment (10%) |
+| **Programming Language** | Python / k6 JavaScript |
+| **Tools Used** | k6, Grafana, InfluxDB, Docker |
 
 ---
 
-## Project Overview
-This project evaluates the performance and scalability of HTTP request handling under concurrent load using k6 on a public API service. The selected target is httpbin.org, which provides multiple endpoints for testing HTTP requests and responses.
+# 1. Project Overview
 
-The purpose of this project is to measure API response time, throughput and error handling under different traffic conditions and identify performance bottlenecks.
+This project evaluates the performance and scalability of HTTP request handling under concurrent load using **k6** on a public API service.
+
+The selected API is:
+
+**https://httpbin.org/**
+
+This service provides multiple endpoints suitable for HTTP performance testing and allows realistic simulation of:
+
+- successful responses
+- delayed responses
+- server errors
+
+The project demonstrates how concurrent workloads behave under increasing traffic and visualizes performance metrics using **Grafana dashboards**.
+
+This assignment focuses on **parallel programming concepts**, especially:
+
+### Concurrent Technique
+- Multiple virtual users sending requests simultaneously using **k6 scenarios**
+
+### Parallel Technique
+- Multiple execution workers/threads processing requests in parallel
+
+This clearly demonstrates performance behavior under concurrent and parallel load.
 
 ---
 
-## Objectives
-- Evaluate API performance under different load conditions
-- Measure response time and throughput
-- Identify bottlenecks
-- Analyze system stability
-- Visualize performance using Grafana
+# 2. Problem Statement
+
+Modern API services must serve many users at the same time.
+
+When traffic increases:
+
+- response time may increase
+- throughput may drop
+- failures may occur
+
+The challenge is identifying:
+
+- how many concurrent users the API can handle
+- when performance degrades
+- how failures affect system stability
+
+This project solves that by applying concurrent load testing and analyzing the results visually.
 
 ---
 
-## Tools Used
-- k6
+# 3. Objectives
+
+The objectives are:
+
+✅ Evaluate API performance under concurrent traffic
+
+✅ Measure response time
+
+✅ Measure throughput
+
+✅ Detect HTTP failures
+
+✅ Identify performance bottlenecks
+
+✅ Visualize metrics using Grafana
+
+✅ Compare behavior under different workloads
+
+---
+
+# 4. System Requirements
+
+## Hardware
+- Laptop / PC
+- Minimum 8GB RAM
+
+## Software
+
+- Windows 10 / 11
+- Docker Desktop
 - Grafana
 - InfluxDB
-- httpbin.org
+- k6
+- Git
+- VS Code
 
 ---
 
-## Target API
+# 5. Installation Steps
+
+## Clone repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/ITT440-Performance-Testing.git
+cd ITT440-Performance-Testing
+```
+
+---
+
+## Start Docker services
+
+```bash
+docker-compose up -d
+```
+
+Check running:
+
+```bash
+docker ps
+```
+
+---
+
+## Run k6 test
+
+```bash
+k6 run script.js
+```
+
+---
+
+## Open Grafana
+
+URL:
+
+```text
+http://localhost:3000
+```
+
+Default login:
+
+```text
+admin
+admin
+```
+
+---
+
+# 6. Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| **k6** | Generate concurrent traffic |
+| **Grafana** | Dashboard visualization |
+| **InfluxDB** | Store performance metrics |
+| **Docker** | Run services |
+| **GitHub** | Documentation |
+
+---
+
+# 7. Target API
+
+## Base URL
+
 https://httpbin.org/
 
-Endpoints tested:
-- `/get`
-- `/delay/2`
-- `/status/500`
+## Endpoints Tested
+
+### `/get`
+
+Normal response
+
+### `/delay/2`
+
+Delayed response
+
+### `/status/500`
+
+Server error simulation
 
 ---
 
-## Test Scenarios
-
-### 1. Baseline Throughput Test
-**Endpoint:** `/get`  
-**Users:** 30 VUs  
-**Duration:** 1 minute  
-
-Purpose:
-- Measure normal response time
-- Observe throughput
-- Confirm API stability
+# 8. Test Scenarios
 
 ---
 
-### 2. Latency Stress Test
-**Endpoint:** `/delay/2`  
-**Users:** 0–60 VUs  
-**Duration:** 2 minutes  
+## 8.1 Baseline Throughput Test
 
-Purpose:
-- Simulate delayed server response
-- Observe latency under concurrent users
-- Identify performance degradation
+**Endpoint:** `/get`
 
----
+**Virtual Users:** 30
 
-### 3. Failure Behavior Test
-**Endpoint:** `/status/500`  
-**Users:** 25 VUs  
-**Duration:** 1 minute  
+**Duration:** 1 minute
 
-Purpose:
-- Test error response handling
-- Observe failure rate
-- Evaluate system stability
+### Purpose
+
+- measure normal response time
+- confirm stability
+- observe throughput
 
 ---
 
-## k6 Test Script
+## 8.2 Latency Stress Test
+
+**Endpoint:** `/delay/2`
+
+**Users:** 0 → 60
+
+**Duration:** 2 minutes
+
+### Purpose
+
+- simulate delayed server response
+- observe latency
+- detect slowdown
+
+---
+
+## 8.3 Failure Behavior Test
+
+**Endpoint:** `/status/500`
+
+**Users:** 25
+
+**Duration:** 1 minute
+
+### Purpose
+
+- test error handling
+- measure failure rate
+- evaluate system recovery
+
+---
+
+# 9. k6 Test Script
 
 ```javascript
 import http from 'k6/http';
@@ -144,69 +304,170 @@ export function failureTest() {
 
 ---
 
-## Grafana Dashboard
+# 10. Grafana Dashboard
 
-Dashboard panels used:
+Dashboard panels:
 
 - HTTP Request Duration
-- Requests per Second
+- Requests Per Second
 - Virtual Users
 - Error Rate
 - Response Time Percentiles
 
 ---
 
-## Results Summary
+# 11. Results Summary
 
-### Baseline Throughput Test
-- Stable response time
-- No errors detected
-- High throughput
-
-### Latency Stress Test
-- Response time increased
-- Throughput reduced
-- Delay observed
-
-### Failure Behavior Test
-- HTTP 500 detected
-- Error rate increased
-- System remained stable
+| Test | Response Time | Throughput | Errors |
+|------|---------------|------------|--------|
+| Baseline | Stable | High | None |
+| Latency | Increased | Reduced | Low |
+| Failure | Moderate | Stable | High |
 
 ---
 
-## Bottleneck Analysis
-The bottlenecks identified include:
+# 12. Analysis
 
-- Higher response time during delay testing
-- Lower throughput under concurrent load
-- Increased error rate in failure testing
+## Baseline Test
 
----
+API handled requests efficiently.
 
-## Recommendations
-- Optimize server response handling
-- Improve scalability
-- Apply caching where needed
-- Monitor continuously using Grafana
+Observations:
+
+- stable response
+- no failures
+- consistent throughput
 
 ---
 
-## Conclusion
-The API handled normal traffic efficiently but showed increased latency and reduced throughput under stress conditions. Error handling worked correctly during failure testing. Grafana helped visualize system performance and made bottleneck analysis easier.
+## Latency Test
+
+Performance degraded.
+
+Observations:
+
+- response time increased
+- throughput reduced
+- concurrent traffic affected speed
 
 ---
 
-## Screenshots
+## Failure Test
 
-### Grafana Dashboard
-(Add screenshot here)
+System returned HTTP 500 correctly.
 
-### Response Time Graph
-(Add screenshot here)
+Observations:
 
-### Error Rate Graph
-(Add screenshot here)
+- error rate increased
+- requests completed
+- system remained responsive
 
-### Virtual Users Graph
-(Add screenshot here)
+---
+
+# 13. Bottleneck Analysis
+
+Identified bottlenecks:
+
+### High concurrency
+
+Many users increased waiting time
+
+### Delayed responses
+
+Slower endpoint reduced throughput
+
+### Error handling
+
+Failures increased monitoring alerts
+
+---
+
+# 14. Recommendations
+
+Recommended improvements:
+
+- optimize server processing
+- caching
+- scale backend resources
+- improve response handling
+- continuous monitoring
+
+---
+
+# 15. Conclusion
+
+The project successfully demonstrated:
+
+- concurrent load testing
+- parallel execution behavior
+- performance visualization
+
+The API handled normal traffic efficiently.
+
+Under heavier load:
+
+- latency increased
+- throughput decreased
+
+Failure simulation showed:
+
+- correct HTTP handling
+- stable monitoring visibility
+
+Grafana provided clear performance insights.
+
+This project successfully meets ITT440 assignment requirements for concurrent and parallel programming.
+
+---
+
+# 16. Screenshots
+
+## Docker Running
+
+![Docker](screenshots/docker-ps.png)
+
+---
+
+## Grafana Data Source
+
+![Datasource](screenshots/datasource.png)
+
+---
+
+## Grafana Dashboard
+
+![Dashboard](screenshots/grafana-dashboard.png)
+
+---
+
+## k6 Result
+
+![k6](screenshots/k6-result.png)
+
+---
+
+## Retest Result
+
+![Retest](screenshots/k6-retest.png)
+
+---
+
+## Grafana Retest
+
+![Grafana Retest](screenshots/grafana-retest.png)
+
+---
+
+# 17. Demonstration Video
+
+YouTube link:
+
+[Watch Demo Here](PASTE_YOUR_YOUTUBE_LINK_HERE)
+
+---
+
+# 18. GitHub Repository
+
+GitHub:
+
+https://github.com/YOUR_USERNAME/ITT440-Performance-Testing
