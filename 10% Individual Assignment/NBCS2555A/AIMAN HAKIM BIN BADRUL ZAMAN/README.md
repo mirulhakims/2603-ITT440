@@ -20,16 +20,39 @@ Tester : AIMAN HAKIM BIN BADRUL ZAMAN (SID : 2024130077)
 <br>
 <br>
 
-## 3.0 - Test Environment Setup and Methodology
+## 3.0 - Performance Testing Hypothesis
 
-### 3.1 Test Environment Setup (visual guide)
+Project Objective:
+To evaluate the performance, stability, and scalability of the fakestoreapi.com REST API under various load conditions using Apache JMeter.
+
+### 3.1 Load Test Hypothesis
+Hypothesis:
+Under a steady load of 300 concurrent users accessing the /products endpoint for 15 minutes, the API is expected to maintain an average response time below 500 ms, a 95th percentile response time below 600 ms, and an error rate of less than 1%, while achieving a throughput of at least 100 requests per second.
+
+### 3.2 Spike Test Hypothesis
+Hypothesis:
+When subjected to a sudden spike from 50 to 400 concurrent users for 3 minutes (after 5 minutes of normal load), the API is expected to handle the traffic burst without crashing, recover quickly after the spike, maintain an average response time below 800 ms during the spike, and keep the error rate below 2%.
+
+### 3.3 Soak Test (Endurance) Hypothesis
+Hypothesis:
+Under a sustained load of 150 concurrent users for 2 hours, the API is expected to demonstrate long-term stability with no significant performance degradation (response time increase < 20%), maintain an average response time below 500 ms, and sustain an error rate of 0% throughout the test duration.
+
+### Overall Project Hypothesis
+The fakestoreapi.com API is expected to demonstrate good performance, stability, and reliability suitable for a public demo API when tested under moderate load, sudden traffic spikes, and prolonged usage. It is hypothesized that the API will successfully handle the defined load conditions with acceptable response times and minimal to zero errors.
+
+<br>
+<br>
+
+## 4.0 - Test Environment Setup and Methodology
+
+### 4.1 Test Environment Setup (visual guide)
 For the environment setup, the user can watch the video below.
 
 https://youtu.be/qY2wVylRsRM?si=R5SvOqhR6YLrZSCC 
 
 <br>
 
-### 3.2 Methodology
+### 4.2 Methodology
 
 Apache JMeter operates on GUI. Therefore, no codes are required and just need to fill in the settings for the test template.
 
@@ -43,9 +66,9 @@ Apache JMeter operates on GUI. Therefore, no codes are required and just need to
 <br>
 <br>
 
-## 4.0 Raw Data Presentation
+## 5.0 Raw Data Presentation
 
-### 4.1 Load Test
+### 5.1 Load Test
 
 #### Performance index
 <img width="774" height="200" alt="image" src="https://github.com/user-attachments/assets/b176f04d-e85e-4e91-83c9-a49cb48c608f" />
@@ -68,7 +91,7 @@ fakestoreapi.com excellently handles load test with near-perfect error rate of 0
 
 <br>
 
-### 4.2 Soak Test
+### 5.2 Soak Test
 
 #### Performance Index
 <img width="782" height="192" alt="image" src="https://github.com/user-attachments/assets/d2dd7fa2-5a2a-442c-9741-2bd19d8ec76e" />
@@ -92,7 +115,7 @@ The Soak Test with 150 concurrent users ran successfully for 2 hours. The API de
 
 <br>
 
-### 4.3 Spike Test
+### 5.3 Spike Test
 
 #### Performance Index
 <img width="760" height="183" alt="image" src="https://github.com/user-attachments/assets/efd14c9f-cb76-4625-9e7e-31ad4e3753c9" />
@@ -117,21 +140,21 @@ The Spike Test with a sudden burst of 400 handled well by the API. It shows that
 <br>
 <br>
 
-## 5.0 Imporovement Suggestions
+## 6.0 Imporovement Suggestions
 This project has successfully established a strong foundation in performance testing using Apache JMeter. The initial tests focused on the /products endpoint provided valuable insights into the API’s behavior under different load conditions. To further enhance the realism and depth of testing, the User is encouraged to expand the test scenarios by incorporating multiple critical endpoints. This includes testing authentication flows such as Login (/auth/login), along with other key operations like viewing single products (/products/{id}), managing carts (/carts), and user-related endpoints.
 By simulating complete user journeys (e.g., Login → Browse Products → Add to Cart), the performance tests will better reflect real-world usage patterns, helping to identify bottlenecks across various API functionalities and delivering more comprehensive and actionable results.
 
 <br>
 <br>
 
-## 6. 0 Conclusion
+## 7. 0 Conclusion
 The fakestoreapi.com demonstrated strong and reliable performance across all three performance tests. It successfully handled a steady load of 300 users, a sudden spike up to 400 concurrent users, and a prolonged endurance test of 150 users for 2 hours with zero errors (0.00% error rate) in all scenarios.
 Response times remained consistently good, with average times ranging between 248 ms to 347 ms, and excellent Apdex scores between 0.975 – 0.988, indicating high user satisfaction. The API showed good stability with no major degradation during long-duration testing and effectively managed sudden traffic bursts.
 
 <br>
 <br>
 
-## 7.0 YOUTUBE LINK 
+## 8.0 YOUTUBE LINK 
 https://youtu.be/qY2wVylRsRM?si=R5SvOqhR6YLrZSCC 
 
 </div>
