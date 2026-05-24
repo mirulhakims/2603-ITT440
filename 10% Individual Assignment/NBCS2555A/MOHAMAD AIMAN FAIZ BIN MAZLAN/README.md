@@ -55,19 +55,27 @@ This project investigates these behaviors through structured performance testing
 
 # 4. Tools Used
 
-- k6 → Performance testing engine
+- **k6** → Performance testing engine
   ![k6](tools-logo/k6_logo.png)
+
+
   
-- Grafana → Data visualization
+- **Grafana** → Data visualization
   ![Grafana](tools-logo/grafana_logo.png)
+
+
   
-- InfluxDB → Metrics storage
+- **InfluxDB** → Metrics storage
   ![InfluxDB](tools-logo/influxdb_logo.png)
+
+
   
-- Docker → Container environment
+- **Docker** → Container environment
   ![Docker](tools-logo/docker_logo.png)
+
+
   
-- httpbin.org → Public API test target  
+- **httpbin.org** → Public API test target  
 
 ---
 
