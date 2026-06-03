@@ -2,7 +2,7 @@
 # Performance Evaluation of Web-Based Booking Systems under Concurrent Load using Locust
 
 <p align="center">
-  <img src="../../../clipart4384750.png" alt="Locust Framework Logo" width="150"/>
+  <img src="clipart4384750.png" alt="Locust Framework Logo" width="150"/>
 </p>
 
 Course Code: ITT440 - Network Pogramming  
@@ -90,13 +90,13 @@ To validate the hypothesis, three distinct load profiles were systematically run
 ### Visual Data Evidence
 
 #### 1. Baseline Load Test Performance
-![Load Test Charts](../../../Chart%20Load%20Test.png)
+![Load Test Charts](Chart%20Load%20Test.png)
 
 #### 2. High-Intensity Stress Test Degradation
-![Stress Test Charts](../../../Chart%20Stress%20Test.png)
+![Stress Test Charts](Chart%20Stress%20Test.png)
 
 #### 3. Endurance Soak Test Stability
-![Soak Test Charts](../../../Chart%20Soak%20Test.png)
+![Soak Test Charts](Chart%20Soak%20Test.png)
 
 ---
 
